@@ -1,0 +1,158 @@
+﻿@inherits DotNetNuke.Web.Mvc.Framework.DnnWebViewPage<Christoc.Modules.SettingsChart2.Models.GetSettingsChart>
+
+@using DotNetNuke.Web.Mvc.Helpers
+@using System.Web.Mvc
+@using Christoc.Modules.SettingsChart2.Models
+
+@{
+    var cities = ViewBag.Cities as List<GetCityAll>;
+}
+
+
+<fieldset>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-3 custom-label"> <label for="cars">Chọn chủ đề:</label></div>
+            <div class="col-sm-9 custom-label">
+                @Html.DropDownListFor(m => Model.IdCity, (SelectList)ViewBag.Cities, "Select City",
+                                                         new { @onchange = "showPerson(this.value)", @class = "form-control" })
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3 custom-label"><label for="cars">Loại biểu đồ:</label></div>
+            <div class="col-sm-9 custom-label">
+                <label class="radio-inline">
+                    @Html.RadioButtonFor(m => Model.LoaiBieuDo, "column", new { @checked = true })
+                    @Html.LabelFor(m => Model.LoaiBieuDo, "Cột")
+                </label>
+                <label class="radio-inline">
+                    @Html.RadioButtonFor(m => Model.LoaiBieuDo, "line")
+                    @Html.LabelFor(m => Model.LoaiBieuDo, "Đường")
+                </label>
+                <label class="radio-inline">
+                    @Html.RadioButtonFor(m => Model.LoaiBieuDo, "bar")
+                    @Html.LabelFor(m => Model.LoaiBieuDo, "Bar")
+                </label>
+                <label class="radio-inline">
+                    @Html.RadioButtonFor(m => Model.LoaiBieuDo, "area")
+                    @Html.LabelFor(m => Model.LoaiBieuDo, "Vùng")
+                </label>
+                <label class="radio-inline">
+                    @Html.RadioButtonFor(m => Model.LoaiBieuDo, "spline")
+                    @Html.LabelFor(m => Model.LoaiBieuDo, "Point")
+
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3 custom-label"> <label for="cars">Tên biểu đồ:</label></div>
+            <div class="col-sm-9 custom-label"> @Html.TextBoxFor(m => Model.TenBieuDo, new { @class = "col-sm-9 custom-label" })</div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3 custom-label"> <label for="cars">Mô tả biểu đồ:</label></div>
+            <div class="col-sm-9 custom-label">@Html.TextBoxFor(m => Model.MoTaBieuDo, new { @class = "col-sm-9 custom-label" })</div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3 custom-label"> <label for="cars">Tên AxisX:</label></div>
+            <div class="col-sm-9 custom-label">@Html.TextBoxFor(m => Model.TenX, new { @class = "col-sm-9 custom-label" })</div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3 custom-label"><label for="cars">Tên AxisY:</label></div>
+            <div class="col-sm-9 custom-label">@Html.TextBoxFor(m => Model.TenY, new { @class = "col-sm-9 custom-label" })</div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3 custom-label"><label for="cars">Chọn AxisX:</label></div>
+            <div class="col-sm-9 custom-label">
+                @Html.DropDownListFor(m => Model.ChonX, (SelectList)ViewBag.ListFieldX, "Select X", new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3 custom-label"><label for="cars">Chọn AxisY:</label></div>
+            <div class="col-sm-9 custom-label">
+                @Html.ListBoxFor(m => Model.ChonY, (MultiSelectList)ViewBag.ListField, new { @class = "multipleselect2", @id = "selectY" })
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3 custom-label"><label for="cars">Bài viết cùng chủ đề:</label></div>
+            <div class="col-sm-9 custom-label">
+                @Html.ListBoxFor(m => Model.ChonCungChuDe, (MultiSelectList)ViewBag.ListField, new { @class = "multipleselect2", @id = "selectPerson" })
+            </div>
+        </div>
+    </div>
+</fieldset>
+
+<script>
+      $(document).ready(function () {
+        $('.multipleselect2').multiselect({
+                        includeSelectAllOption: true,
+                        nonSelectedText: '--Chọn--',
+                        buttonWidth: 510,
+                        enableFiltering: true
+                    });
+        var rvtoken = $("input[name='__RequestVerificationToken']").val();
+        var ModuleId = @Dnn.ModuleContext.ModuleId;
+        var TabId = @Dnn.ModuleContext.TabId;
+        var siteRoot = dnn.getVar("sf_siteRoot", "/");
+        showPerson = function (id) {
+            console.log(id);
+            $("#selectPerson").removeClass('multipleselect2');
+            $.ajax({
+                url: siteRoot + 'DesktopModules/MVC/SettingsChart2/Settings/GetPersons',
+                method: "GET",
+                contentType: "application/json; charset=utf-8", dataType: "json",
+                dataType: "json",
+                data: { id: id },
+                headers: {
+                    "ModuleId": ModuleId,
+                    "TabId": TabId,
+                    "RequestVerificationToken": rvtoken
+                },
+                success: function (data) {
+                    var result = [];
+                    var persons = JSON.parse(data.data);
+                    $(`#selectPerson`).empty();
+                    for (var i = 0; i < persons.length; i++) {
+                        $('#selectPerson').append(`<option value=${persons[i].Id}>${persons[i].Name}</option>`)
+                    }
+                    $('#selectPerson').multiselect('rebuild');
+                    $('.multipleselect2').multiselect({
+                        includeSelectAllOption: true,
+                        nonSelectedText: '--Chọn--',
+                        buttonWidth: 350,
+                        enableFiltering: true
+                    });
+                }
+
+            });
+        }
+    });
+</script>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css" type="text/css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+
+<style>
+    .dnnCheckbox .mark {
+        background-color: initial !important
+    }
+
+    .mark, mark {
+        background-color: initial !important
+    }
+
+    .row {
+        display: contents;
+    }
+
+    .custom-label {
+        margin-top: 12px;
+    }
+
+    .checkbox-inline + .checkbox-inline, .radio-inline + .radio-inline {
+        margin-left: -5px !important
+    }
+</style>

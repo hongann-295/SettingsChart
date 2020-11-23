@@ -1,0 +1,187 @@
+﻿@inherits DotNetNuke.Web.Mvc.Framework.DnnWebViewPage<IEnumerable<Christoc.Modules.SettingsChart2.Models.Item>>
+
+@using System.Text.RegularExpressions
+@using DotNetNuke.Web.Mvc.Helpers
+
+
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+
+<div id="container"></div>
+
+
+
+<script type="text/javascript">
+    var chart;
+    $(document).ready(function () {
+         var rvtoken = $("input[name='__RequestVerificationToken']").val();
+        var ModuleId = @Dnn.ModuleContext.ModuleId;
+        var TabId = @Dnn.ModuleContext.TabId;
+        var siteRoot = dnn.getVar("sf_siteRoot", "/");
+        var SettingsName;
+        var TenBieuDo = [];
+        var MotaBieuDo = [];
+        var TenX = [];
+        var TenY = [];
+        var ChonCungChuDe = [];
+        var ChonX = [];
+        var ChonY = [];
+        var LoaiBieuDo = [];
+        $.ajax({
+            url: siteRoot + 'DesktopModules/MVC/SettingsChart2/Item/GetSettingsChart',
+            method: "GET",
+            dataType: "json",
+            headers: {
+                "ModuleId": ModuleId,
+                "TabId": TabId,
+                "RequestVerificationToken": rvtoken
+            },
+            success: function (data) {
+                SettingsName = data.data;
+                var obj = JSON.parse(SettingsName);
+                ChonCungChuDe.push(obj[0].SettingValue);
+                ChonX.push(obj[1].SettingValue);
+                ChonY.push(obj[2].SettingValue);
+                LoaiBieuDo.push(obj[3].SettingValue);
+                MotaBieuDo.push(obj[4].SettingValue);
+                TenBieuDo.push(obj[5].SettingValue);
+                TenX.push(obj[6].SettingValue);
+                TenY.push(obj[7].SettingValue);
+                chart = new Highcharts.Chart({
+                    chart: {
+                        renderTo: 'container',
+                        type: LoaiBieuDo,
+                        events: {
+                            load: requestData
+                        }
+                    },
+                    title: {
+                        text: TenBieuDo,
+                    },
+                    subtitle: {
+                        text: MotaBieuDo
+                    },
+                    xAxis: {
+                        title: {
+                            text: TenX
+                        },
+                        categories: []
+                    },
+                    yAxis: {
+                        min: 0,
+                        title: {
+                            text: TenY
+                        }
+                    }
+                    , plotOptions: {
+                        column: {
+                            pointPadding: 0.2,
+                            borderWidth: 0
+                        }
+                    },
+                    series: []
+                });
+            }
+        })
+
+    });
+
+     function requestData() {
+        var rvtoken = $("input[name='__RequestVerificationToken']").val();
+        var ModuleId = @Dnn.ModuleContext.ModuleId;
+        var TabId = @Dnn.ModuleContext.TabId;
+        var siteRoot = dnn.getVar("sf_siteRoot", "/");
+        var chartData;
+        var Genders = [];
+        var Amounts = [];
+        $.ajax({
+            url: siteRoot + 'DesktopModules/MVC/SettingsChart2/Item/GetResults',
+            method: "Get",
+            contentType: "application/json; charset=utf-8", dataType: "json",
+            headers: {
+                "ModuleId": ModuleId,
+                "TabId": TabId,
+                "RequestVerificationToken": rvtoken
+            },
+            //success: function (data) {
+            //    chartData = data.data;
+            //    var obj = JSON.parse(chartData);
+            //    for (var i = 0; i < obj.length; i++) {
+            //        Genders.push(obj[i].Gender);
+            //        //alert(obj[i].Gender);
+            //        Amounts.push(obj[i].Amount);
+            //        //alert(obj[i].Amount);
+            //        chart.addSeries({
+            //            name: obj[i].Gender,
+            //            data: JSON.parse("[" + obj[i].Amount + ",2,3]")
+            //        });
+
+            //    }
+            //   chart.xAxis[0].setCategories(Genders)
+            //    console.log(Genders);
+            //    console.log(Amounts);
+
+            //}
+
+            success: function (data) {
+                chartData = data.gender;
+                var obj = JSON.parse(chartData);
+                console.log(obj);
+                var amountArr1 = []; amountArr2 = []; amountArr3 = []; cities = [];
+                for (var i = 0; i < obj.Cities1.length; i++) {
+                    amountArr1.push(obj.Cities1[i].Amount);
+                }
+                for (var i = 0; i < obj.Cities2.length; i++) {
+                    amountArr2.push(obj.Cities2[i].Amount);
+                    cities.push(obj.Cities2[i].CityName)
+                }
+                for (var i = 0; i < obj.Cities3.length; i++) {
+                    amountArr3.push(obj.Cities3[i].Amount);
+                }
+                console.log(amountArr1);
+                chart.addSeries({
+                    name: "Male",
+                    data: amountArr1
+                });
+                chart.addSeries({
+                    name: "Female",
+                    data: amountArr2
+                });
+                chart.addSeries({
+                    name: "Other",
+                    data: amountArr3
+                });
+                console.log(cities);
+                chart.xAxis[0].setCategories(cities)
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert(xhr.status);
+                alert(thrownError);
+            }
+        })
+    }
+
+</script>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css" type="text/css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<style>
+    .dnnCheckbox .mark {
+        background-color: initial !important
+    }
+
+    .mark, mark {
+        background-color: initial !important
+    }
+
+    .row {
+        display: contents;
+    }
+</style>
