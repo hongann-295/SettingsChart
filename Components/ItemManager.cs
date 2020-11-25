@@ -34,6 +34,7 @@ namespace Christoc.Modules.SettingsChart2.Components
         IEnumerable<GetChart> GetCharts();
         GetSettingsChart GetModule(int moduleId);
         IEnumerable<GetPerson> GetPeople();
+        IEnumerable<GetPersonCity> GetPersonCities();
     }
 
     class ItemManager : ServiceLocator<IItemManager, ItemManager>, IItemManager
@@ -153,6 +154,14 @@ namespace Christoc.Modules.SettingsChart2.Components
             using (IDataContext ctx = DataContext.Instance())
             {
                 return ctx.ExecuteQuery<GetPerson>(System.Data.CommandType.StoredProcedure, String.Format("Sp_GetPersons"));
+            }
+        }
+
+        public IEnumerable<GetPersonCity> GetPersonCities()
+        {
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                return ctx.ExecuteQuery<GetPersonCity>(System.Data.CommandType.StoredProcedure, String.Format("Sp_GetGenderByCity"));
             }
         }
     }

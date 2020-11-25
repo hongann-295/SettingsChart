@@ -21,6 +21,9 @@ using DotNetNuke.Entities.Users;
 using DotNetNuke.Framework.JavaScriptLibraries;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using NPOI.HSSF.UserModel;
+using System.IO;
+using NPOI.SS.UserModel;
 
 namespace Christoc.Modules.SettingsChart2.Controllers
 {
@@ -138,6 +141,98 @@ namespace Christoc.Modules.SettingsChart2.Controllers
             return Json(new { gender = JsonConvert.SerializeObject(gender, Formatting.Indented) }, JsonRequestBehavior.AllowGet);
 
         }
+
+        public ActionResult Articles_Export_ToExcel(int page, string orderBy, string filter)
+        {
+            var tempArticles = ItemManager.Instance.GetPersonCities();
+
+            //Create new Excel Workbook
+            var workbook = new HSSFWorkbook();
+
+            //Create new Excel Sheet
+            var sheet = workbook.CreateSheet();
+
+            var row0 = sheet.CreateRow(0);
+
+            HSSFFont myFont = (HSSFFont)workbook.CreateFont();
+            myFont.FontHeightInPoints = (short)12;
+            myFont.FontName = "Times New Roman";
+
+            HSSFCellStyle borderedCellStyle = (HSSFCellStyle)workbook.CreateCellStyle();
+            borderedCellStyle.SetFont(myFont);
+            borderedCellStyle.WrapText = true;
+            borderedCellStyle.VerticalAlignment = VerticalAlignment.Center;
+
+            HSSFCellStyle borderedCellStyleContent = (HSSFCellStyle)workbook.CreateCellStyle();
+            borderedCellStyleContent.SetFont(myFont);
+            borderedCellStyleContent.WrapText = true;
+            //borderedCellStyleContent.Alignment = HorizontalAlignment.Center; //chieu ngang
+            borderedCellStyleContent.VerticalAlignment = VerticalAlignment.Center;
+
+            //(Optional) set the width of the columns
+            sheet.SetColumnWidth(0, 2500);//Title
+            sheet.SetColumnWidth(1, 2500);//Section
+            sheet.SetColumnWidth(2, 2500);//Views
+            sheet.SetColumnWidth(3, 2500);
+            //sheet.SetColumnWidth(4, 2500);
+            //sheet.SetColumnWidth(5, 2500);
+            //sheet.SetColumnWidth(6, 256 * 40);
+
+            //Create a header row
+
+            var headerRow = sheet.CreateRow(0);
+            headerRow.CreateCell(0).SetCellValue("IdCity");
+            headerRow.CreateCell(1).SetCellValue("CityName");
+            headerRow.CreateCell(2).SetCellValue("Gender");
+            headerRow.CreateCell(3).SetCellValue("Amount");
+            //headerRow.CreateCell(4).SetCellValue("Gender");
+            //headerRow.CreateCell(5).SetCellValue("Age");
+            //headerRow.CreateCell(6).SetCellValue("Desciptions");
+
+            for (int c = 0; c < headerRow.Cells.Count; c++)
+            {
+                headerRow.Cells[c].CellStyle = borderedCellStyle;
+            }
+
+            //(Optional) freeze the header row so it is not scrolled
+            sheet.CreateFreezePane(0, 1, 0, 1);
+
+            int rowNumber = 1;
+
+            //Populate the sheet with values from the grid data
+
+            foreach (var objOrg in tempArticles)
+            {
+                //Create a new Row
+                var row = sheet.CreateRow(rowNumber++);
+
+                //Set the Values for Cells
+                
+                row.CreateCell(0).SetCellValue(objOrg.IdCity);
+                row.CreateCell(1).SetCellValue(objOrg.CityName);
+                row.CreateCell(2).SetCellValue(objOrg.Gender);
+                row.CreateCell(3).SetCellValue(objOrg.Amount);
+                //row.CreateCell(4).SetCellValue(objOrg.Gender);
+                //row.CreateCell(5).SetCellValue(objOrg.Age);
+                //row.CreateCell(6).SetCellValue(objOrg.Desciptions);
+
+                for (int c = 0; c < row.Cells.Count; c++)
+                {
+                    row.Cells[c].CellStyle = borderedCellStyleContent;
+                }
+            }
+
+
+            //Write the Workbook to a memory stream
+            MemoryStream output = new MemoryStream();
+            workbook.Write(output);
+
+            //Return the result to the end user
+            return File(output.ToArray(),   //The binary data of the XLS file
+             "application/vnd.ms-excel",//MIME type of Excel files
+             "OrganizationList.xls");    //Suggested file name in the "Save as" dialog which will be displayed to the end user
+        }
+
 
     }
 }

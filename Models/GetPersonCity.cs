@@ -5,14 +5,11 @@ using System.Web;
 
 namespace Christoc.Modules.SettingsChart2.Models
 {
-    public class GetPerson
+    public class GetPersonCity
     {
-        public int Id { get; set; }
         public int IdCity { get; set; }
         public string CityName { get; set; }
-        public string Name { get; set; }
         public string Gender { get; set; }
-        public int Age { get; set; }
-        public string Desciptions { get; set; }
+        public int Amount { get; set; }
     }
 }

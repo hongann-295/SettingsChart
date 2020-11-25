@@ -12,7 +12,9 @@
 
 <div id="container"></div>
 
-
+<div>
+    @Html.ActionLink("Export to Excel", "Articles_Export_ToExcel", "Item", new { page = 1, orderBy = "~", filter = "~" }, new { id = "exportLink" })
+</div>
 
 <script type="text/javascript">
     var chart;
