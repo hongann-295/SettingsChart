@@ -64,25 +64,6 @@ namespace Christoc.Modules.SettingsChart2.Controllers
             SelectList selectListX = new SelectList(selectX, "Value", "Text");
             ViewBag.ListFieldX = selectListX;
 
-            //var getfield = ItemManager.Instance.GetFields();
-            //var selectLists = new List<SelectListItem>();
-            //foreach (var element in getfield)
-            //{
-            //    selectLists.Add(new SelectListItem
-            //    {
-            //        Value = element.name,
-            //        Text = element.name
-            //    });
-            //}
-            //MultiSelectList selectList = new MultiSelectList(selectLists, "Value", "Text");
-            ViewBag.ListField = GetSelectListItems(null);
-
-            return View(settingsChart);
-        }
-
-
-        private MultiSelectList GetSelectListItems(string[] selectedValues)
-        {
             var getfield = ItemManager.Instance.GetFields();
             var selectLists = new List<SelectListItem>();
             foreach (var element in getfield)
@@ -93,8 +74,27 @@ namespace Christoc.Modules.SettingsChart2.Controllers
                     Text = element.name
                 });
             }
-            return new MultiSelectList(getfield, "name", "name", selectedValues);
+            MultiSelectList selectList = new MultiSelectList(selectLists, "Value", "Text");
+            ViewBag.ListField = selectList;
+
+            return View(settingsChart);
         }
+
+
+        //private MultiSelectList GetSelectListItems(string[] selectedValues)
+        //{
+        //    var getfield = ItemManager.Instance.GetFields();
+        //    var selectLists = new List<SelectListItem>();
+        //    foreach (var element in getfield)
+        //    {
+        //        selectLists.Add(new SelectListItem
+        //        {
+        //            Value = element.name,
+        //            Text = element.name
+        //        });
+        //    }
+        //    return new MultiSelectList(getfield, "name", "name", selectedValues);
+        //}
 
         [HttpGet]
         public JsonResult GetPersons(int id)

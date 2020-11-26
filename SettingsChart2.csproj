@@ -43,13 +43,23 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto, Version=1.8.6.0, Culture=neutral, PublicKeyToken=0e99375e54769942, processorArchitecture=MSIL">
+      <HintPath>packages\Portable.BouncyCastle.1.8.6\lib\net40\BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
     <Reference Include="DotNetNuke, Version=8.0.0.674, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\bin\DotNetNuke.dll</HintPath>
     </Reference>
+    <Reference Include="DotNetNuke.HttpModules, Version=9.2.2.178, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\bin\DotNetNuke.HttpModules.dll</HintPath>
+    </Reference>
     <Reference Include="DotNetNuke.Web.Mvc, Version=8.0.0.674, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\bin\DotNetNuke.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=1.2.0.246, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>packages\SharpZipLib.1.2.0\lib\net45\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.ApplicationBlocks.Data, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -59,6 +69,18 @@
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Bin\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI, Version=2.5.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>packages\NPOI.2.5.1\lib\net45\NPOI.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OOXML, Version=2.5.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>packages\NPOI.2.5.1\lib\net45\NPOI.OOXML.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXml4Net, Version=2.5.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>packages\NPOI.2.5.1\lib\net45\NPOI.OpenXml4Net.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXmlFormats, Version=2.5.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>packages\NPOI.2.5.1\lib\net45\NPOI.OpenXmlFormats.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
@@ -117,6 +139,7 @@
     <Compile Include="Models\GetCityAll.cs" />
     <Compile Include="Models\GetField.cs" />
     <Compile Include="Models\GetPerson.cs" />
+    <Compile Include="Models\GetPersonCity.cs" />
     <Compile Include="Models\GetSettingsChart.cs" />
     <Compile Include="Models\Item.cs" />
     <Compile Include="Controllers\ItemController.cs" />
@@ -191,9 +214,9 @@
           <DevelopmentServerPort>0</DevelopmentServerPort>
           <DevelopmentServerVPath>
           </DevelopmentServerVPath>
-          <IISUrl>http://dnndev.me/desktopmodules/mvc/SettingsChart2</IISUrl>
+          <IISUrl>http://devdnn.me/desktopmodules/mvc/SettingsChart2</IISUrl>
           <OverrideIISAppRootUrl>True</OverrideIISAppRootUrl>
-          <IISAppRootUrl>http://dnndev.me</IISAppRootUrl>
+          <IISAppRootUrl>http://devdnn.me</IISAppRootUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

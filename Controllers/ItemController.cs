@@ -21,6 +21,10 @@ using DotNetNuke.Entities.Users;
 using DotNetNuke.Framework.JavaScriptLibraries;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using NPOI.HSSF.UserModel;
+using NPOI.SS.UserModel;
+using System.IO;
+using NPOI.SS.Util;
 
 namespace Christoc.Modules.SettingsChart2.Controllers
 {
@@ -139,5 +143,88 @@ namespace Christoc.Modules.SettingsChart2.Controllers
 
         }
 
+
+        public ActionResult Articles_Export_ToExcel()
+        {
+            var getPersonCities = ItemManager.Instance.GetPersonCities();
+
+            var workbook = new HSSFWorkbook();
+
+            //Create new Excel Sheet
+            var sheet = workbook.CreateSheet();
+
+            HSSFFont myFont = (HSSFFont)workbook.CreateFont();
+            myFont.FontHeightInPoints = (short)12;
+            myFont.FontName = "Times New Roman";
+
+            HSSFCellStyle borderedCellStyle = (HSSFCellStyle)workbook.CreateCellStyle();
+            borderedCellStyle.SetFont(myFont);
+            borderedCellStyle.WrapText = true;
+            borderedCellStyle.VerticalAlignment = VerticalAlignment.Center;
+
+            HSSFCellStyle borderedCellStyleContent = (HSSFCellStyle)workbook.CreateCellStyle();
+            borderedCellStyleContent.SetFont(myFont);
+            borderedCellStyleContent.WrapText = true;
+            //borderedCellStyleContent.Alignment = HorizontalAlignment.Center; //chieu ngang
+            borderedCellStyleContent.VerticalAlignment = VerticalAlignment.Center;
+
+            //(Optional) set the width of the columns
+            sheet.SetColumnWidth(0, 20 * 200);
+            sheet.SetColumnWidth(1, 20 * 200);
+            sheet.SetColumnWidth(2, 20 * 200);
+
+            var headerRow = sheet.CreateRow(0);
+            headerRow.CreateCell(0).SetCellValue("CityName");
+            headerRow.CreateCell(1).SetCellValue("Gender");
+            headerRow.CreateCell(2).SetCellValue("Amount");
+
+            for (int c = 0; c < headerRow.Cells.Count; c++)
+            {
+                headerRow.Cells[c].CellStyle = borderedCellStyle;
+            }
+
+            sheet.CreateFreezePane(0, 1, 0, 1);
+
+            var result = from cities in getPersonCities
+                         group cities by cities.IdCity into c
+                         select c.ToList();
+
+            int RowIndex = 1;
+
+            foreach (var objOrg in result)
+            {
+                int Number = objOrg.Count;
+                if (Number > 1)
+                {
+                    int MergeIndex = (Number - 1) + RowIndex;
+
+                    //Merging Cells
+                    CellRangeAddress Merged = new CellRangeAddress(RowIndex, MergeIndex, 0, 0);
+                    sheet.AddMergedRegion(Merged);
+                }
+                //Set the Values for Cells
+                foreach (var objOrg1 in objOrg)
+                {
+                    var row = sheet.CreateRow(RowIndex);
+                    row.CreateCell(0).SetCellValue(objOrg1.CityName);
+                    row.CreateCell(1).SetCellValue(objOrg1.Gender);
+                    row.CreateCell(2).SetCellValue(objOrg1.Amount);
+                    RowIndex++;
+                    for (int c = 0; c < row.Cells.Count; c++)
+                    {
+                        row.Cells[c].CellStyle = borderedCellStyleContent;
+                    }
+                }
+            }
+
+            //Write the Workbook to a memory stream
+            MemoryStream output = new MemoryStream();
+            workbook.Write(output);
+
+            //Return the result to the end user
+            return File(output.ToArray(),   //The binary data of the XLS file
+             "application/vnd.ms-excel",//MIME type of Excel files
+             "OrganizationList.xls");  
+        }
     }
 }
