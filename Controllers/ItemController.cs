@@ -25,6 +25,7 @@ using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using System.IO;
 using NPOI.SS.Util;
+using NPOI.HSSF.Util;
 
 namespace Christoc.Modules.SettingsChart2.Controllers
 {
@@ -143,9 +144,16 @@ namespace Christoc.Modules.SettingsChart2.Controllers
 
         }
 
-
-        public ActionResult Articles_Export_ToExcel()
+        public void CreateCell(IRow CurrentRow, int CellIndex, string Value, HSSFCellStyle Style)
         {
+            ICell Cell = CurrentRow.CreateCell(CellIndex);
+            Cell.SetCellValue(Value);
+            Cell.CellStyle = Style;
+        }
+
+        public ActionResult Export_ToExcel()
+        {
+
             var getPersonCities = ItemManager.Instance.GetPersonCities();
 
             var workbook = new HSSFWorkbook();
@@ -160,6 +168,8 @@ namespace Christoc.Modules.SettingsChart2.Controllers
             HSSFCellStyle borderedCellStyle = (HSSFCellStyle)workbook.CreateCellStyle();
             borderedCellStyle.SetFont(myFont);
             borderedCellStyle.WrapText = true;
+            borderedCellStyle.FillForegroundColor = HSSFColor.Grey25Percent.Index;
+            borderedCellStyle.FillPattern = FillPattern.SolidForeground;
             borderedCellStyle.VerticalAlignment = VerticalAlignment.Center;
 
             HSSFCellStyle borderedCellStyleContent = (HSSFCellStyle)workbook.CreateCellStyle();
@@ -171,17 +181,25 @@ namespace Christoc.Modules.SettingsChart2.Controllers
             //(Optional) set the width of the columns
             sheet.SetColumnWidth(0, 20 * 200);
             sheet.SetColumnWidth(1, 20 * 200);
-            sheet.SetColumnWidth(2, 20 * 200);
+            //sheet.SetColumnWidth(2, 20 * 200);
+            //sheet.SetDefaultColumnStyle(0, borderedCellStyle);
+            //sheet.SetDefaultColumnStyle(1, borderedCellStyle);
+            //sheet.SetDefaultColumnStyle(2, borderedCellStyle);
 
-            var headerRow = sheet.CreateRow(0);
-            headerRow.CreateCell(0).SetCellValue("CityName");
-            headerRow.CreateCell(1).SetCellValue("Gender");
-            headerRow.CreateCell(2).SetCellValue("Amount");
+            CreateCell(sheet.CreateRow(0), 0, "Column Value", borderedCellStyle);
 
-            for (int c = 0; c < headerRow.Cells.Count; c++)
-            {
-                headerRow.Cells[c].CellStyle = borderedCellStyle;
-            }
+            IRow HeaderRow = sheet.CreateRow(0);
+            CreateCell(HeaderRow, 0, "CityName", borderedCellStyle);
+            CreateCell(HeaderRow, 1, "Gender", borderedCellStyle);
+            CreateCell(HeaderRow, 2, "Amount", borderedCellStyle);
+            //headerRow.CreateCell(0).SetCellValue("CityName");
+            //headerRow.CreateCell(1).SetCellValue("Gender");
+            //headerRow.CreateCell(2).SetCellValue("Amount");
+
+            //for (int c = 0; c < headerRow.Cells.Count; c++)
+            //{
+            //    headerRow.Cells[c].CellStyle = borderedCellStyle;
+            //}
 
             sheet.CreateFreezePane(0, 1, 0, 1);
 
@@ -190,30 +208,30 @@ namespace Christoc.Modules.SettingsChart2.Controllers
                          select c.ToList();
 
             int RowIndex = 1;
-
             foreach (var objOrg in result)
             {
                 int Number = objOrg.Count;
                 if (Number > 1)
                 {
                     int MergeIndex = (Number - 1) + RowIndex;
-
-                    //Merging Cells
                     CellRangeAddress Merged = new CellRangeAddress(RowIndex, MergeIndex, 0, 0);
                     sheet.AddMergedRegion(Merged);
                 }
-                //Set the Values for Cells
                 foreach (var objOrg1 in objOrg)
                 {
-                    var row = sheet.CreateRow(RowIndex);
-                    row.CreateCell(0).SetCellValue(objOrg1.CityName);
-                    row.CreateCell(1).SetCellValue(objOrg1.Gender);
-                    row.CreateCell(2).SetCellValue(objOrg1.Amount);
+                    IRow row = sheet.CreateRow(RowIndex);
+                    CreateCell(row, 0, objOrg1.CityName, borderedCellStyleContent);
+                    CreateCell(row, 1, objOrg1.Gender, borderedCellStyleContent);
+                    CreateCell(row, 2, objOrg1.Amount.ToString(), borderedCellStyleContent);
+
+                    //row.CreateCell(0).SetCellValue(objOrg1.CityName);
+                    //row.CreateCell(1).SetCellValue(objOrg1.Gender);
+                    //row.CreateCell(2).SetCellValue(objOrg1.Amount);
                     RowIndex++;
-                    for (int c = 0; c < row.Cells.Count; c++)
-                    {
-                        row.Cells[c].CellStyle = borderedCellStyleContent;
-                    }
+                    //for (int c = 0; c < row.Cells.Count; c++)
+                    //{
+                    //    row.Cells[c].CellStyle = borderedCellStyleContent;
+                    //}
                 }
             }
 
