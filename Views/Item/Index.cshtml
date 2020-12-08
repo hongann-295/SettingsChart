@@ -42,8 +42,10 @@
                 "RequestVerificationToken": rvtoken
             },
             success: function (data) {
+                //alert(data.data);
                 SettingsName = data.data;
                 var obj = JSON.parse(SettingsName);
+                //console.log(obj);
                 ChonCungChuDe.push(obj[0].SettingValue);
                 ChonX.push(obj[1].SettingValue);
                 ChonY.push(obj[2].SettingValue);
@@ -97,8 +99,9 @@
         var TabId = @Dnn.ModuleContext.TabId;
         var siteRoot = dnn.getVar("sf_siteRoot", "/");
         var chartData;
-        var Genders = [];
-        var Amounts = [];
+        var ChonChuDe = [];
+        var ChonX = [];
+         var ChonY = [];
         $.ajax({
             url: siteRoot + 'DesktopModules/MVC/SettingsChart2/Item/GetResults',
             method: "Get",
@@ -108,61 +111,77 @@
                 "TabId": TabId,
                 "RequestVerificationToken": rvtoken
             },
-            //success: function (data) {
-            //    chartData = data.data;
-            //    var obj = JSON.parse(chartData);
-            //    for (var i = 0; i < obj.length; i++) {
-            //        Genders.push(obj[i].Gender);
-            //        //alert(obj[i].Gender);
-            //        Amounts.push(obj[i].Amount);
-            //        //alert(obj[i].Amount);
-            //        chart.addSeries({
-            //            name: obj[i].Gender,
-            //            data: JSON.parse("[" + obj[i].Amount + ",2,3]")
-            //        });
-
-            //    }
-            //   chart.xAxis[0].setCategories(Genders)
-            //    console.log(Genders);
-            //    console.log(Amounts);
-
-            //}
-
             success: function (data) {
-                chartData = data.gender;
+                chartData = data.data;
                 var obj = JSON.parse(chartData);
-                console.log(obj);
-                var amountArr1 = []; amountArr2 = []; amountArr3 = []; cities = [];
-                for (var i = 0; i < obj.Cities1.length; i++) {
-                    amountArr1.push(obj.Cities1[i].Amount);
-                }
-                for (var i = 0; i < obj.Cities2.length; i++) {
-                    amountArr2.push(obj.Cities2[i].Amount);
-                    cities.push(obj.Cities2[i].CityName)
-                }
-                for (var i = 0; i < obj.Cities3.length; i++) {
-                    amountArr3.push(obj.Cities3[i].Amount);
-                }
-                console.log(amountArr1);
-                chart.addSeries({
-                    name: "Male",
-                    data: amountArr1
-                });
-                chart.addSeries({
-                    name: "Female",
-                    data: amountArr2
-                });
-                chart.addSeries({
-                    name: "Other",
-                    data: amountArr3
-                });
-                console.log(cities);
-                chart.xAxis[0].setCategories(cities)
-            },
-            error: function (xhr, ajaxOptions, thrownError) {
-                alert(xhr.status);
-                alert(thrownError);
+                //console.log(obj)
+                ChonChuDe.push(obj[0])
+                //console.log(ChonChuDe)
+                ChonX.push(obj[1])
+                //console.log(obj[1].split(','))
+                ChonY.push(obj[2])
+                console.log(ChonChuDe);
+                var obj1 = JSON.parse(ChonChuDe);
+                for (var i = 0; i < obj1.length; i++) {
+                    //alert(obj1[i].Id);
+                    //alert(obj1[i].Age);
+                    chart.addSeries({
+                        name: obj1[i].Name, // vì sao ở đây có Name? why?
+                        data: JSON.parse("[" + obj1[i].Age + "]") // vì sao ở đây lấy được Age? why?
+                    });
+                    // obj1[i].Name, obj1[i].Age có thể lấy từ source khác thay vì từ ChonChuDe được ko? where?
+                    // hãy giúp a trả lời những câu hỏi =)))
+                    //daj toois veef e sn :))))
+                    //console.log(ChonChuDe[0])
+                 }
+
+                //chart.addSeries({
+                //    name: 'Name',
+                //    data: JSON.parse("[" + obj[0] + ",4,2,7,5]")
+                //});
+                //chart.addSeries({
+                //    name: 'Id',
+                //    data: JSON.parse("[" + obj[0] + ",2,3,4,5]")
+                //});
+                chart.xAxis[0].setCategories(obj[1].split(','))
+
             }
+
+            //success: function (data) {
+            //    chartData = data.gender;
+            //    var obj = JSON.parse(chartData);
+            //    console.log(obj);
+            //    var amountArr1 = []; amountArr2 = []; amountArr3 = []; cities = [];
+            //    for (var i = 0; i < obj.Cities1.length; i++) {
+            //        amountArr1.push(obj.Cities1[i].Amount);
+            //    }
+            //    for (var i = 0; i < obj.Cities2.length; i++) {
+            //        amountArr2.push(obj.Cities2[i].Amount);
+            //        cities.push(obj.Cities2[i].CityName)
+            //    }
+            //    for (var i = 0; i < obj.Cities3.length; i++) {
+            //        amountArr3.push(obj.Cities3[i].Amount);
+            //    }
+            //    console.log(amountArr1);
+            //    chart.addSeries({
+            //        name: "Male",
+            //        data: amountArr1
+            //    });
+            //    chart.addSeries({
+            //        name: "Female",
+            //        data: amountArr2
+            //    });
+            //    chart.addSeries({
+            //        name: "Other",
+            //        data: amountArr3
+            //    });
+            //    console.log(cities);
+            //    chart.xAxis[0].setCategories(cities)
+            //},
+            //error: function (xhr, ajaxOptions, thrownError) {
+            //    alert(xhr.status);
+            //    alert(thrownError);
+            //}
         })
     }
 

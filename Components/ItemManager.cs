@@ -15,6 +15,7 @@ using DotNetNuke.Data;
 using DotNetNuke.Framework;
 using Christoc.Modules.SettingsChart2.Models;
 using System;
+using System.Linq;
 
 namespace Christoc.Modules.SettingsChart2.Components
 {
@@ -33,6 +34,8 @@ namespace Christoc.Modules.SettingsChart2.Components
         IEnumerable<GetChart> GetCharts();
         IEnumerable<GetPerson> GetPeople();
         IEnumerable<GetPersonCity> GetPersonCities();
+        object GetPersonsSettings(string Id, string fields);
+        IEnumerable<ModuleSettings> GetSettingsData();
     }
 
     class ItemManager : ServiceLocator<IItemManager, ItemManager>, IItemManager
@@ -154,5 +157,24 @@ namespace Christoc.Modules.SettingsChart2.Components
             }
         }
 
+        public object GetPersonsSettings(string Id, string fields)
+        {
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                var list = ctx.ExecuteQuery<object>(System.Data.CommandType.StoredProcedure, String.Format("Sp_GetPersonsSettings '{0}','{1}'", Id, fields));
+                if (list != null && list.Count() > 0)
+                    return list.FirstOrDefault();
+                return null;
+
+            }
+        }
+
+        public IEnumerable<ModuleSettings> GetSettingsData()
+        {
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                return ctx.ExecuteQuery<ModuleSettings>(System.Data.CommandType.StoredProcedure, String.Format("Sp_GetSettingsChartData"));
+            }
+        }
     }
 }

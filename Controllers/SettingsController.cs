@@ -23,6 +23,8 @@ using System.Linq;
 using System.Data;
 using System;
 using System.Web.UI.WebControls;
+using System.Data.SqlClient;
+using Christoc.Modules.SettingsChart2.Models;
 
 namespace Christoc.Modules.SettingsChart2.Controllers
 {
@@ -79,22 +81,7 @@ namespace Christoc.Modules.SettingsChart2.Controllers
 
             return View(settingsChart);
         }
-
-
-        //private MultiSelectList GetSelectListItems(string[] selectedValues)
-        //{
-        //    var getfield = ItemManager.Instance.GetFields();
-        //    var selectLists = new List<SelectListItem>();
-        //    foreach (var element in getfield)
-        //    {
-        //        selectLists.Add(new SelectListItem
-        //        {
-        //            Value = element.name,
-        //            Text = element.name
-        //        });
-        //    }
-        //    return new MultiSelectList(getfield, "name", "name", selectedValues);
-        //}
+        
 
         [HttpGet]
         public JsonResult GetPersons(int id)
@@ -121,10 +108,25 @@ namespace Christoc.Modules.SettingsChart2.Controllers
             ModuleContext.Configuration.ModuleSettings["SettingsChart_TenY"] = settingsChart.TenY.ToString();
             ModuleContext.Configuration.ModuleSettings["SettingsChart_ChonY"] = String.Join(",", settingsChart.ChonY);
 
+            var dataY = String.Join(",", settingsChart.ChonY);
+
             var dataChuDe = ItemManager.Instance.GetPeople().ToList();
             var dataTopic = String.Join(",", settingsChart.ChonCungChuDe);
-            var resultTopic = new List<Models.GetPerson>();
+            var resultTopic = new List<object>();
             List<string> result = dataTopic.Split(',').ToList();
+           
+            for (var i = 0; i < result.Count; i++)
+            {
+                var a = result[i];
+                var rs = GetPersonSetting(a, dataY);
+                resultTopic.Add(rs);
+
+            }
+            
+            string jsonString = JsonConvert.SerializeObject(resultTopic);
+            ModuleContext.Configuration.ModuleSettings["SettingsChart_ChonCungChuDe"] = jsonString;
+
+            var resultTopic2 = new List<Models.GetPerson>();
             for (var i = 0; i < result.Count; i++)
             {
                 var a = result[i];
@@ -132,56 +134,35 @@ namespace Christoc.Modules.SettingsChart2.Controllers
                 {
                     if (int.Parse(a) == item.Id)
                     {
-                        resultTopic.Add(item);
+                        resultTopic2.Add(item);
                     }
                 }
             }
 
+            var resultTopics = dataChuDe.Select(p => new { p.Id });
             switch (settingsChart.ChonX)
             {
                 case "Id":
-                    var personId = resultTopic.Select(i => i.Id).ToList();
+                    var personId = resultTopic2.Select(i => i.Id).ToList();
                     ModuleContext.Configuration.ModuleSettings["SettingsChart_ChonX"] = String.Join(",", personId);
-                    ModuleContext.Configuration.ModuleSettings["SettingsChart_ChonCungChuDe"] = String.Join(",", personId);
                     break;
                 case "Name":
-                    var personName = resultTopic.Select(i => i.Name).ToList();
+                    var personName = resultTopic2.Select(i => i.Name).ToList();
                     ModuleContext.Configuration.ModuleSettings["SettingsChart_ChonX"] = String.Join(",", personName);
-                    ModuleContext.Configuration.ModuleSettings["SettingsChart_ChonCungChuDe"] = String.Join(",", personName);
                     break;
                 default:
-                    personId = resultTopic.Select(i => i.Id).ToList();
+                    personId = resultTopic2.Select(i => i.Id).ToList();
                     ModuleContext.Configuration.ModuleSettings["SettingsChart_ChonX"] = String.Join(",", personId);
-                    ModuleContext.Configuration.ModuleSettings["SettingsChart_ChonCungChuDe"] = String.Join(",", personId);
                     break;
             }
-
-            var dataY = String.Join(",", settingsChart.ChonX);
-            List<string> resultY = dataY.Split(',').ToList();
-          
-
             
-
-            //var results = new List<int>();
-            //var resultsName = new List<string>();
-            //if (settingsChart.ChonX == "Id")
-            //{
-            //    var personId = resultTopic.Select(i => i.Id).ToList();
-            //    results = personId;
-            //}
-            //if (settingsChart.ChonX == "Name")
-            //{
-            //    var personName = resultTopic.Select(i => i.Name).ToList();
-            //    resultsName = personName;
-            //}
-
-
-
-
-
-
-
             return RedirectToDefaultRoute();
+        }
+
+        public object GetPersonSetting(string Id, string Fields)
+        {
+            var result = ItemManager.Instance.GetPersonsSettings(Id, Fields);
+            return result;
         }
     }
 }

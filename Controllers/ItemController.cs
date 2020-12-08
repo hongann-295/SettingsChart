@@ -110,39 +110,49 @@ namespace Christoc.Modules.SettingsChart2.Controllers
         [HttpGet]
         public JsonResult GetResults()
         {
-            var listCharts = ItemManager.Instance.GetCharts();
-            Gender gender = new Gender();
-            gender.Cities1 = new List<City>();
-            gender.Cities2 = new List<City>();
-            gender.Cities3 = new List<City>();
-            foreach (var item in listCharts)
-            {
-                City city = new City();
-                if (item.Gender == "Male")
-                {
-                    city.IdCity = item.IdCity;
-                    city.CityName = item.CityName;
-                    city.Amount = item.Amount;
-                    gender.Cities1.Add(city);
-                }
-                if (item.Gender == "Female")
-                {
-                    city.IdCity = item.IdCity;
-                    city.CityName = item.CityName;
-                    city.Amount = item.Amount;
-                    gender.Cities2.Add(city);
-                }
-                if (item.Gender == "Other")
-                {
-                    city.IdCity = item.IdCity;
-                    city.CityName = item.CityName;
-                    city.Amount = item.Amount;
-                    gender.Cities3.Add(city);
-                }
-            }
-            return Json(new { gender = JsonConvert.SerializeObject(gender, Formatting.Indented) }, JsonRequestBehavior.AllowGet);
+            var listCharts = ItemManager.Instance.GetSettingsData();
+            var rs = (from c in listCharts //where c.ModuleID =Mo
+                     select c.SettingValue).ToList();
+            return Json(new { data = JsonConvert.SerializeObject(rs, Formatting.Indented) }, JsonRequestBehavior.AllowGet);
 
         }
+
+        //[HttpGet]
+        //public JsonResult GetResults()
+        //{
+        //    var listCharts = ItemManager.Instance.GetCharts();
+        //    Gender gender = new Gender();
+        //    gender.Cities1 = new List<City>();
+        //    gender.Cities2 = new List<City>();
+        //    gender.Cities3 = new List<City>();
+        //    foreach (var item in listCharts)
+        //    {
+        //        City city = new City();
+        //        if (item.Gender == "Male")
+        //        {
+        //            city.IdCity = item.IdCity;
+        //            city.CityName = item.CityName;
+        //            city.Amount = item.Amount;
+        //            gender.Cities1.Add(city);
+        //        }
+        //        if (item.Gender == "Female")
+        //        {
+        //            city.IdCity = item.IdCity;
+        //            city.CityName = item.CityName;
+        //            city.Amount = item.Amount;
+        //            gender.Cities2.Add(city);
+        //        }
+        //        if (item.Gender == "Other")
+        //        {
+        //            city.IdCity = item.IdCity;
+        //            city.CityName = item.CityName;
+        //            city.Amount = item.Amount;
+        //            gender.Cities3.Add(city);
+        //        }
+        //    }
+        //    return Json(new { gender = JsonConvert.SerializeObject(gender, Formatting.Indented) }, JsonRequestBehavior.AllowGet);
+
+        //}
 
         public void CreateCell(IRow CurrentRow, int CellIndex, string Value, HSSFCellStyle Style)
         {
