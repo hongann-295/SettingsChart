@@ -46,9 +46,6 @@
                 SettingsName = data.data;
                 var obj = JSON.parse(SettingsName);
                 //console.log(obj);
-                ChonCungChuDe.push(obj[0].SettingValue);
-                ChonX.push(obj[1].SettingValue);
-                ChonY.push(obj[2].SettingValue);
                 LoaiBieuDo.push(obj[3].SettingValue);
                 MotaBieuDo.push(obj[4].SettingValue);
                 TenBieuDo.push(obj[5].SettingValue);
@@ -101,7 +98,15 @@
         var chartData;
         var ChonChuDe = [];
         var ChonX = [];
-         var ChonY = [];
+        var ChonY = [];
+
+        var IdCity = [];
+        var Age = [];
+        var Id = [];
+        var Description = [];
+        var Name = [];
+        var Gender = [];
+
         $.ajax({
             url: siteRoot + 'DesktopModules/MVC/SettingsChart2/Item/GetResults',
             method: "Get",
@@ -114,37 +119,81 @@
             success: function (data) {
                 chartData = data.data;
                 var obj = JSON.parse(chartData);
-                //console.log(obj)
                 ChonChuDe.push(obj[0])
-                //console.log(ChonChuDe)
+                console.log(ChonChuDe)
                 ChonX.push(obj[1])
-                //console.log(obj[1].split(','))
-                ChonY.push(obj[2])
-                console.log(ChonChuDe);
+                console.log(ChonX)
+                ChonY = obj[2].split(',');
+                console.log(ChonY)
                 var obj1 = JSON.parse(ChonChuDe);
+
                 for (var i = 0; i < obj1.length; i++) {
-                    //alert(obj1[i].Id);
-                    //alert(obj1[i].Age);
+                    Id.push(obj1[i].Id)
+                    IdCity.push(obj1[i].IdCity)
+                    Age.push(obj1[i].Age)
+                    Gender.push(obj1[i].Gender)
+                    Description.push(obj1[i].Description)
+                    Name.push(obj1[i].Name)
+                    //Object.getOwnPropertyNames(obj1[i]).forEach(
+                    //    function (val, idx, array) {
+                    //        console.log(val + ' -> ' + obj1[i][val]);
+                    //    })
+                    //for (var j = 0; j < ChonY.length; i++) {
+                    //    //alert(obj1[i].Id);
+                    //    //alert(obj1[i].Age);
+                    //    console.log(ChonY[j])
+                    //    console.log(obj1[i])
+                    //    chart.addSeries({
+                    //        name: ChonY[j], // vì sao ở đây có Name? why?
+                    //        data: JSON.parse("[" + obj1[i].Age + "]") // vì sao ở đây lấy được Age? why?
+                    //    });
+                    //    //console.log(obj2[j])
+                    //// obj1[i].Name, obj1[i].Age có thể lấy từ source khác thay vì từ ChonChuDe được ko? where?
+                    //// hãy giúp a trả lời những câu hỏi =)))
+                    ////daj toois veef e sn :))))
+                    ////console.log(ChonChuDe[0])
+                    //}
+           
+                   
+                    //chart.addSeries({
+                    //    name: Object.getOwnPropertyNames(obj1[i]), 
+                    //    data: JSON.parse("[" + Object.values(obj1[i]) + "]") 
+                    //});
+                    //console.log(typeof obj1[i].Age)
+                    //alert(Object.getOwnPropertyNames(obj1[i]));
+                    //alert(Object.values(obj1[i]));
+                }
+                
+                var b = [];
+                b.push({ Id: Id })
+                b.push({ IdCity: IdCity })
+                b.push({ Age: Age })
+                b.push({ Gender: Gender })
+                b.push({ Description: Description })
+                b.push({ Name: Name })
+                console.log(b)
+
+                //var locations = [];
+                //for (var i = 0; i < b.length; i++) {
+                //    locations.push({
+                //        ChonY: b[i]
+                //    });
+                //}
+                //console.log(locations)
+                for (var i = 0; i < b.length; i++) {
+                    //var checkType = [];
+                    //b[i].forEach(element => checkType = typeof element)
+                    //if (checkType == "number") {
+
+                    //}
                     chart.addSeries({
-                        name: obj1[i].Name, // vì sao ở đây có Name? why?
-                        data: JSON.parse("[" + obj1[i].Age + "]") // vì sao ở đây lấy được Age? why?
+                        name: Object.getOwnPropertyNames(b[i]),
+                        data: JSON.parse("[" + Object.values(b[i]) + "]")
                     });
-                    // obj1[i].Name, obj1[i].Age có thể lấy từ source khác thay vì từ ChonChuDe được ko? where?
-                    // hãy giúp a trả lời những câu hỏi =)))
-                    //daj toois veef e sn :))))
-                    //console.log(ChonChuDe[0])
-                 }
-
-                //chart.addSeries({
-                //    name: 'Name',
-                //    data: JSON.parse("[" + obj[0] + ",4,2,7,5]")
-                //});
-                //chart.addSeries({
-                //    name: 'Id',
-                //    data: JSON.parse("[" + obj[0] + ",2,3,4,5]")
-                //});
+                    console.log(b[i])
+                }
                 chart.xAxis[0].setCategories(obj[1].split(','))
-
+                
             }
 
             //success: function (data) {
