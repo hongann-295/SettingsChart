@@ -117,16 +117,24 @@
                 "RequestVerificationToken": rvtoken
             },
             success: function (data) {
+                //alert(data);
                 chartData = data.data;
                 var obj = JSON.parse(chartData);
                 ChonChuDe.push(obj[0])
-                console.log(ChonChuDe)
                 ChonX.push(obj[1])
-                console.log(ChonX)
-                ChonY = obj[2].split(',');
-                console.log(ChonY)
+               // ChonY = obj[2].split(',');
                 var obj1 = JSON.parse(ChonChuDe);
-
+                console.log(obj1)
+                
+                var Y = obj[2].split(',');
+                console.log(Y)
+                //for (var i = 0; i < obj1.length; i++) {
+                //    for (var j = 1; j < Y.length; j++) {
+                //        var field = Y[j];
+                //        //console.log(field);
+                //        //console.log(obj1[i].JSON.parse(field));
+                //    }
+                //}
                 for (var i = 0; i < obj1.length; i++) {
                     Id.push(obj1[i].Id)
                     IdCity.push(obj1[i].IdCity)
@@ -134,10 +142,6 @@
                     Gender.push(obj1[i].Gender)
                     Description.push(obj1[i].Description)
                     Name.push(obj1[i].Name)
-                    //Object.getOwnPropertyNames(obj1[i]).forEach(
-                    //    function (val, idx, array) {
-                    //        console.log(val + ' -> ' + obj1[i][val]);
-                    //    })
                     //for (var j = 0; j < ChonY.length; i++) {
                     //    //alert(obj1[i].Id);
                     //    //alert(obj1[i].Age);
@@ -173,24 +177,16 @@
                 b.push({ Name: Name })
                 console.log(b)
 
-                //var locations = [];
-                //for (var i = 0; i < b.length; i++) {
-                //    locations.push({
-                //        ChonY: b[i]
-                //    });
-                //}
-                //console.log(locations)
                 for (var i = 0; i < b.length; i++) {
-                    //var checkType = [];
-                    //b[i].forEach(element => checkType = typeof element)
-                    //if (checkType == "number") {
-
-                    //}
-                    chart.addSeries({
-                        name: Object.getOwnPropertyNames(b[i]),
-                        data: JSON.parse("[" + Object.values(b[i]) + "]")
-                    });
-                    console.log(b[i])
+                    var objType = Object.values(b[i])[0]
+                    var checkType = [];
+                    objType.forEach(element => checkType = typeof element)
+                    if (checkType == "number") {
+                        chart.addSeries({
+                            name: Object.getOwnPropertyNames(b[i]),
+                            data: JSON.parse("[" + Object.values(b[i]) + "]")
+                        });
+                    }
                 }
                 chart.xAxis[0].setCategories(obj[1].split(','))
                 
