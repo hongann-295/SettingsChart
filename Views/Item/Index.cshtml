@@ -13,7 +13,7 @@
 <div id="container"></div>
 
 <div>
-    @Html.ActionLink("Export to Excel", "Articles_Export_ToExcel", "Item")
+    @Html.ActionLink("Export to Excel", "Export_ToExcel", "Item")
 </div>
 
 <script type="text/javascript">
@@ -28,9 +28,6 @@
         var MotaBieuDo = [];
         var TenX = [];
         var TenY = [];
-        var ChonCungChuDe = [];
-        var ChonX = [];
-        var ChonY = [];
         var LoaiBieuDo = [];
         $.ajax({
             url: siteRoot + 'DesktopModules/MVC/SettingsChart2/Item/GetSettingsChart',
@@ -44,9 +41,6 @@
             success: function (data) {
                 SettingsName = data.data;
                 var obj = JSON.parse(SettingsName);
-                ChonCungChuDe.push(obj[0].SettingValue);
-                ChonX.push(obj[1].SettingValue);
-                ChonY.push(obj[2].SettingValue);
                 LoaiBieuDo.push(obj[3].SettingValue);
                 MotaBieuDo.push(obj[4].SettingValue);
                 TenBieuDo.push(obj[5].SettingValue);
@@ -97,8 +91,10 @@
         var TabId = @Dnn.ModuleContext.TabId;
         var siteRoot = dnn.getVar("sf_siteRoot", "/");
         var chartData;
-        var Genders = [];
-        var Amounts = [];
+        var ChonChuDe = [];
+         var ChonX = [];
+         var ChonY = [];
+
         $.ajax({
             url: siteRoot + 'DesktopModules/MVC/SettingsChart2/Item/GetResults',
             method: "Get",
@@ -108,61 +104,70 @@
                 "TabId": TabId,
                 "RequestVerificationToken": rvtoken
             },
-            //success: function (data) {
-            //    chartData = data.data;
-            //    var obj = JSON.parse(chartData);
-            //    for (var i = 0; i < obj.length; i++) {
-            //        Genders.push(obj[i].Gender);
-            //        //alert(obj[i].Gender);
-            //        Amounts.push(obj[i].Amount);
-            //        //alert(obj[i].Amount);
-            //        chart.addSeries({
-            //            name: obj[i].Gender,
-            //            data: JSON.parse("[" + obj[i].Amount + ",2,3]")
-            //        });
-
-            //    }
-            //   chart.xAxis[0].setCategories(Genders)
-            //    console.log(Genders);
-            //    console.log(Amounts);
-
-            //}
-
             success: function (data) {
-                chartData = data.gender;
-                var obj = JSON.parse(chartData);
-                console.log(obj);
-                var amountArr1 = []; amountArr2 = []; amountArr3 = []; cities = [];
-                for (var i = 0; i < obj.Cities1.length; i++) {
-                    amountArr1.push(obj.Cities1[i].Amount);
+                chartData = data.data;
+                var objData = JSON.parse(chartData);
+                ChonChuDe.push(objData[0])
+                ChonX.push(objData[1])
+                ChonY = objData[2].split(',');
+                var objChude = JSON.parse(ChonChuDe);
+
+                for (var j = 0; j < ChonY.length; j++) {
+                    var Y = ChonY[j];
+                    var data = [];
+                    for (var i = 0; i < objChude.length; i++) {
+                        var name1 = [];
+                        var x = objChude[i];
+                        if (typeof (x[Y]) == "number") {
+                            name1.push(Y);
+                            data.push(x[Y]);
+                        }
+                    }
+                    if (data.length > 0) {
+                        chart.addSeries({
+                            name: name1,
+                            data: data
+                        });
+                    }
                 }
-                for (var i = 0; i < obj.Cities2.length; i++) {
-                    amountArr2.push(obj.Cities2[i].Amount);
-                    cities.push(obj.Cities2[i].CityName)
-                }
-                for (var i = 0; i < obj.Cities3.length; i++) {
-                    amountArr3.push(obj.Cities3[i].Amount);
-                }
-                console.log(amountArr1);
-                chart.addSeries({
-                    name: "Male",
-                    data: amountArr1
-                });
-                chart.addSeries({
-                    name: "Female",
-                    data: amountArr2
-                });
-                chart.addSeries({
-                    name: "Other",
-                    data: amountArr3
-                });
-                console.log(cities);
-                chart.xAxis[0].setCategories(cities)
-            },
-            error: function (xhr, ajaxOptions, thrownError) {
-                alert(xhr.status);
-                alert(thrownError);
+                chart.xAxis[0].setCategories(objData[1].split(','))
             }
+
+            //success: function (data) {
+            //    chartData = data.gender;
+            //    var obj = JSON.parse(chartData);
+            //    console.log(obj);
+            //    var amountArr1 = []; amountArr2 = []; amountArr3 = []; cities = [];
+            //    for (var i = 0; i < obj.Cities1.length; i++) {
+            //        amountArr1.push(obj.Cities1[i].Amount);
+            //    }
+            //    for (var i = 0; i < obj.Cities2.length; i++) {
+            //        amountArr2.push(obj.Cities2[i].Amount);
+            //        cities.push(obj.Cities2[i].CityName)
+            //    }
+            //    for (var i = 0; i < obj.Cities3.length; i++) {
+            //        amountArr3.push(obj.Cities3[i].Amount);
+            //    }
+            //    console.log(amountArr1);
+            //    chart.addSeries({
+            //        name: "Male",
+            //        data: amountArr1
+            //    });
+            //    chart.addSeries({
+            //        name: "Female",
+            //        data: amountArr2
+            //    });
+            //    chart.addSeries({
+            //        name: "Other",
+            //        data: amountArr3
+            //    });
+            //    console.log(cities);
+            //    chart.xAxis[0].setCategories(cities)
+            //},
+            //error: function (xhr, ajaxOptions, thrownError) {
+            //    alert(xhr.status);
+            //    alert(thrownError);
+            //}
         })
     }
 

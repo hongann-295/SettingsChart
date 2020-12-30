@@ -23,6 +23,8 @@ using System.Linq;
 using System.Data;
 using System;
 using System.Web.UI.WebControls;
+using System.Data.SqlClient;
+using Christoc.Modules.SettingsChart2.Models;
 
 namespace Christoc.Modules.SettingsChart2.Controllers
 {
@@ -79,22 +81,7 @@ namespace Christoc.Modules.SettingsChart2.Controllers
 
             return View(settingsChart);
         }
-
-
-        //private MultiSelectList GetSelectListItems(string[] selectedValues)
-        //{
-        //    var getfield = ItemManager.Instance.GetFields();
-        //    var selectLists = new List<SelectListItem>();
-        //    foreach (var element in getfield)
-        //    {
-        //        selectLists.Add(new SelectListItem
-        //        {
-        //            Value = element.name,
-        //            Text = element.name
-        //        });
-        //    }
-        //    return new MultiSelectList(getfield, "name", "name", selectedValues);
-        //}
+        
 
         [HttpGet]
         public JsonResult GetPersons(int id)
@@ -119,11 +106,63 @@ namespace Christoc.Modules.SettingsChart2.Controllers
             ModuleContext.Configuration.ModuleSettings["SettingsChart_MoTaBieuDo"] = settingsChart.MoTaBieuDo.ToString();
             ModuleContext.Configuration.ModuleSettings["SettingsChart_TenX"] = settingsChart.TenX.ToString();
             ModuleContext.Configuration.ModuleSettings["SettingsChart_TenY"] = settingsChart.TenY.ToString();
-            ModuleContext.Configuration.ModuleSettings["SettingsChart_ChonX"] = settingsChart.ChonX.ToString();
-            ModuleContext.Configuration.ModuleSettings["SettingsChart_ChonY"] = settingsChart.ChonY.ToString();
-            ModuleContext.Configuration.ModuleSettings["SettingsChart_ChonCungChuDe"] = settingsChart.ChonCungChuDe.ToString();
+            ModuleContext.Configuration.ModuleSettings["SettingsChart_ChonY"] = String.Join(",", settingsChart.ChonY);
 
+            var dataY = String.Join(",", settingsChart.ChonY);
+
+            var dataChuDe = ItemManager.Instance.GetPeople().ToList();
+            var dataTopic = String.Join(",", settingsChart.ChonCungChuDe);
+            var resultTopic = new List<object>();
+            List<string> result = dataTopic.Split(',').ToList();
+           
+            for (var i = 0; i < result.Count; i++)
+            {
+                var a = result[i];
+                var rs = GetPersonSetting(a, dataY);
+                resultTopic.Add(rs);
+
+            }
+            
+            string jsonString = JsonConvert.SerializeObject(resultTopic);
+            ModuleContext.Configuration.ModuleSettings["SettingsChart_ChonCungChuDe"] = jsonString;
+
+            var resultTopic2 = new List<Models.GetPerson>();
+            for (var i = 0; i < result.Count; i++)
+            {
+                var a = result[i];
+                foreach (var item in dataChuDe)
+                {
+                    if (int.Parse(a) == item.Id)
+                    {
+                        resultTopic2.Add(item);
+                    }
+                }
+            }
+
+            var resultTopics = dataChuDe.Select(p => new { p.Id });
+            switch (settingsChart.ChonX)
+            {
+                case "Id":
+                    var personId = resultTopic2.Select(i => i.Id).ToList();
+                    ModuleContext.Configuration.ModuleSettings["SettingsChart_ChonX"] = String.Join(",", personId);
+                    break;
+                case "Name":
+                    var personName = resultTopic2.Select(i => i.Name).ToList();
+                    ModuleContext.Configuration.ModuleSettings["SettingsChart_ChonX"] = String.Join(",", personName);
+                    break;
+                default:
+                    personId = resultTopic2.Select(i => i.Id).ToList();
+                    ModuleContext.Configuration.ModuleSettings["SettingsChart_ChonX"] = String.Join(",", personId);
+                    break;
+            }
+            
             return RedirectToDefaultRoute();
+        }
+
+        public object GetPersonSetting(string Id, string Fields)
+        {
+            var result = ItemManager.Instance.GetPersonsSettings(Id, Fields);
+            return result;
         }
     }
 }

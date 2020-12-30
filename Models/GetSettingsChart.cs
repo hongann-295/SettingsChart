@@ -15,9 +15,7 @@ namespace Christoc.Modules.SettingsChart2.Models
         public string TenX { get; set; }
         public string TenY { get; set; }
         public string ChonX { get; set; }
-        public int[] ItemId { get; set; }
-        public List<SelectListItem> ChonY { get; set; }
-        public string ChonCungChuDe { get; set; }
-        public IEnumerable<SelectListItem> SelectedItems { get; set; }
+        public string[] ChonY { get; set; }
+        public string[] ChonCungChuDe { get; set; }
     }
 }
