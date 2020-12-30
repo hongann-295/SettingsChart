@@ -135,12 +135,14 @@
     <Compile Include="Controllers\SettingsController.cs" />
     <Compile Include="Models\City.cs" />
     <Compile Include="Models\Gender.cs" />
+    <Compile Include="Models\GetAge.cs" />
     <Compile Include="Models\GetChart.cs" />
     <Compile Include="Models\GetCityAll.cs" />
     <Compile Include="Models\GetField.cs" />
     <Compile Include="Models\GetPerson.cs" />
     <Compile Include="Models\GetPersonCity.cs" />
     <Compile Include="Models\GetSettingsChart.cs" />
+    <Compile Include="Models\Help.cs" />
     <Compile Include="Models\Item.cs" />
     <Compile Include="Controllers\ItemController.cs" />
     <Compile Include="Models\ModuleSettings.cs" />
